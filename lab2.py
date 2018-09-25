@@ -46,13 +46,13 @@ def zerofun(a, t, C):
     for i in range(0, len(a)):
         if a[i] > C or a[i] < 0:
             print("out of bounds in zerofun")
-            return "out of bounds error"
+            return False
+    if(numpy.dot(a,t) != 0):
+        print("dot product not zero")
+        return False
+    else:
+        return True
 
-    thesum = 0
-    for i in range(0, len(a)):
-        thesum = thesum + (a[i] * t[i])
-
-    return thesum
 
 
 
@@ -64,6 +64,6 @@ def main():
    print("pol kern: ", polynomial_kernel([3, 0,4, 2], [2, 0 ,1, 9], 2))
    #print(objective([0,7,11], [0, 83, 2]))
    print("rbf kern: ", radial_basis_function_kernel([3, 0, 4, 2], [2, 0 ,1, 9], 1))
-   print("zerofun: ", zerofun([0,2,7], [1, -1 , 1], 10))
+   print("zerofun: ", zerofun([0,2,2], [1, -1 , 1], 10))
 
 main()
