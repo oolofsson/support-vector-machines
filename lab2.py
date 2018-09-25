@@ -3,36 +3,16 @@ from scipy.optimize import minimize
 from scipy.spatial import distance
 import matplotlib.pyplot as plt
 
+def zerofun(a):
+    for i in range(0, len(a)):
+        if a[i] > C or a[i] < 0:
+            print("out of bounds in zerofun")
+    return numpy.dot(a,t)
 
-N = 27
-
-vector = numpy.zeros(N)
-
-i, j = 5, 5;
-precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
-
-C = 1
-
-bounds=[(0, C) for b in range(N)]
-
-#constraint={'type':'eq', 'fun':zerofun}
-
-#K(⃗x, ⃗y ) = ⃗x T · ⃗y
-
-#P i,j = t i t j K(⃗x i , ⃗x j )
-
-#pij_array = pij(0, 0, 0, 0, 0)
-
-def precalculate(t, x, kernel):
+def precalculate(x, kernel):
     for i in range(0, len(precalculated)):
         for j in range(0, len(precalculated[0])):
             precalculated[i][j] = t[i]*t[j]*kernel(x, x)
-
-
-def pij(t, i, j, x, y):
-    t[i]*t[j]*linear_kernel(x, y)
-
-#K(⃗x, ⃗y ) = (⃗x T · ⃗y + 1) p
 
 def radial_basis_function_kernel(x, y, sigma = 1):
     return math.exp(-((distance.euclidean(x, y)**2)/(2*sigma*sigma)))
@@ -42,9 +22,6 @@ def polynomial_kernel(x, y, p = 3):
 
 def linear_kernel(x, y):
     return numpy.dot(numpy.transpose(x), y)
-
-
-#0.5 * ∑ ∑ α i α j t i t j K(⃗x i , ⃗x j ) − ∑ α i
 
 def objective(a):
     #0.5*
@@ -57,24 +34,21 @@ def objective(a):
 
     return 0.5*sum1 - sum2
 
-    #numpy.sum(a, axis=None, dtype=None, out=None, keepdims=<no value>, initial=<no value>)[source]
-
-def zerofun(a, t, C):
-    for i in range(0, len(a)):
-        if a[i] > C or a[i] < 0:
-            print("out of bounds in zerofun")
-            return False
-    if(numpy.dot(a,t) != 0):
-        print("dot product not zero")
-        return False
-    else:
-        return True
-
-
+# GLOBALS
+N = 5
+start = numpy.zeros(N)
+i, j = 5, 5;
+precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
+C = 1
+B=[(0, C) for b in range(N)] # bounds
+XC={'type':'eq', 'fun':zerofun} # constraints
+t = [1, -1, 1, 1, -1]
 
 def main():
-   #ret = minimize (objective, start, bounds=B, constraints=XC )
-   #alpha = ret['x']
+   ret = minimize (objective([1, 4, 3, 3, 7]), start, bounds=B, constraints=XC )
+   alpha = ret['x']
+   print(alpha)
+   '''
    print(vector)
    print(linear_kernel([3, 0,4, 2], [2, 0 ,1, 9]))
    print("pol kern: ", polynomial_kernel([3, 0,4, 2], [2, 0 ,1, 9], 2))
@@ -87,6 +61,6 @@ def main():
    print("william: ", precalculated)
 
    print(objective([1, 4, 3, 3, 7]))
-
+   '''
 
 main()
