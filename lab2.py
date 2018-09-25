@@ -1,5 +1,6 @@
 import numpy , random , math
 from scipy.optimize import minimize
+from scipy.spatial import distance
 import matplotlib.pyplot as plt
 
 
@@ -21,6 +22,14 @@ bounds=[(0, C) for b in range(N)]
 
 def pij(t, i, j, x, y):
     t[i]*t[j]*linear_kernel(x, y)
+
+#K(⃗x, ⃗y ) = (⃗x T · ⃗y + 1) p
+
+def radial_basis_function_kernel(x, y, sigma):
+    return math.exp(-((distance.euclidean(x, y)**2)/(2*sigma*sigma)))
+
+def polynomial_kernel(x, y, p):
+    return (numpy.dot(numpy.transpose(x), y) + 1)**p
 
 def linear_kernel(x, y):
     return numpy.dot(numpy.transpose(x), y)
@@ -51,8 +60,10 @@ def main():
    #ret = minimize (objective, start, bounds=B, constraints=XC )
    #alpha = ret['x']
    print(vector)
-   print(linear_kernel([[3, 0],[4, 2]], [[2, 0] ,[1, 9]]))
+   print(linear_kernel([3, 0,4, 2], [2, 0 ,1, 9]))
+   print("pol kern: ", polynomial_kernel([3, 0,4, 2], [2, 0 ,1, 9], 2))
    #print(objective([0,7,11], [0, 83, 2]))
-   print(zerofun([0,2,7], [1, -1 , 1], 10))
+   print("rbf kern: ", radial_basis_function_kernel([3, 0, 4, 2], [2, 0 ,1, 9], 1))
+   print("zerofun: ", zerofun([0,2,7], [1, -1 , 1], 10))
 
 main()
