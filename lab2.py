@@ -7,7 +7,7 @@ def zerofun(a):
     for i in range(0, len(a)):
         if a[i] > C or a[i] < 0:
             print("out of bounds in zerofun")
-    return numpy.dot(a,t)
+    return numpy.dot(a, t)
 
 def precalculate(x, kernel):
     for i in range(0, len(precalculated)):
@@ -67,5 +67,9 @@ def main():
 
     print(objective([1, 4, 3, 3, 7]))
     '''
+
+    nonzero = [i for i in alphaX if not 0]
+    print("alpha: ", alphaX)
+    print("nozero: ", nonzero)
 
 main()
