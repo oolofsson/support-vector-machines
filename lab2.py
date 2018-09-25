@@ -34,14 +34,27 @@ def objective(a):
 
     return 0.5*sum1 - sum2
 
+def offset_bias_hyperplane(s, x, kernel):
+    sum = 0
+    for i in range(0, len(a)):
+        sum = sum + a[i]*t[i]*kernel(s, x[i]) - t[s]
+    return sum
+
+def indicator(s, x, kernel):
+    sum = 0
+    for i in range(0, len(a)):
+        sum = sum + a[i]*t[i]*kernel(s, x[i])
+    return sum - offset_bias_hyperplane(s, x, kernel)
+
+
 # GLOBALS
 N = 10
 start = numpy.zeros(N)
 i, j = 5, 5;
 precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
 C = 1
-B=[(0, C) for b in range(N)] # bounds
-XC={'type':'eq', 'fun':zerofun} # constraints
+B = [(0, C) for b in range(N)] # bounds
+XC = {'type':'eq', 'fun':zerofun} # constraints
 t = [1, -1, 1, 1, -1, -1, 1, 1, -1, 1]
 a = [1, 4, 3, 3, 7, 9, 22, 1, 23, 10]
 
