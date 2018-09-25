@@ -35,32 +35,37 @@ def objective(a):
     return 0.5*sum1 - sum2
 
 # GLOBALS
-N = 5
+N = 10
 start = numpy.zeros(N)
 i, j = 5, 5;
 precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
 C = 1
 B=[(0, C) for b in range(N)] # bounds
 XC={'type':'eq', 'fun':zerofun} # constraints
-t = [1, -1, 1, 1, -1]
+t = [1, -1, 1, 1, -1, -1, 1, 1, -1, 1]
+a = [1, 4, 3, 3, 7, 9, 22, 1, 23, 10]
 
 def main():
-   ret = minimize (objective([1, 4, 3, 3, 7]), start, bounds=B, constraints=XC )
-   alpha = ret['x']
-   print(alpha)
-   '''
-   print(vector)
-   print(linear_kernel([3, 0,4, 2], [2, 0 ,1, 9]))
-   print("pol kern: ", polynomial_kernel([3, 0,4, 2], [2, 0 ,1, 9], 2))
-   #print(objective([0,7,11], [0, 83, 2]))
-   print("rbf kern: ", radial_basis_function_kernel([3, 0, 4, 2], [2, 0 ,1, 9], 1))
-   print("zerofun: ", zerofun([0,2,2], [1, -1 , 1], 10))
 
-   print("before: ", precalculated)
-   precalculate([1, -1, 1, 1, 1], [4, 3, 7, 8, 5], linear_kernel)
-   print("william: ", precalculated)
+    precalculate(a, radial_basis_function_kernel)
+    ret = minimize(objective, start, bounds=B, constraints=XC)
+    alphaX = ret['x']
+    alphaSuccess = ret['success']
+    print("alpha x :", alphaX)
+    print("alpha success :", alphaSuccess)
+    '''
+    print(vector)
+    print(linear_kernel([3, 0,4, 2], [2, 0 ,1, 9]))
+    print("pol kern: ", polynomial_kernel([3, 0,4, 2], [2, 0 ,1, 9], 2))
+    #print(objective([0,7,11], [0, 83, 2]))
+    print("rbf kern: ", radial_basis_function_kernel([3, 0, 4, 2], [2, 0 ,1, 9], 1))
+    print("zerofun: ", zerofun([0,2,2], [1, -1 , 1], 10))
 
-   print(objective([1, 4, 3, 3, 7]))
-   '''
+    print("before: ", precalculated)
+    precalculate([1, -1, 1, 1, 1], [4, 3, 7, 8, 5], linear_kernel)
+    print("william: ", precalculated)
+
+    print(objective([1, 4, 3, 3, 7]))
+    '''
 
 main()
