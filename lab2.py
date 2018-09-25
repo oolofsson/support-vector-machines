@@ -70,6 +70,6 @@ def main():
 
     nonzero = [i for i in alphaX if not 0]
     print("alpha: ", alphaX)
-    print("nozero: ", nonzero)
+    print("nonzero: ", nonzero)
 
 main()
