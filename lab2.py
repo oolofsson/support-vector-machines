@@ -43,9 +43,23 @@ def offset_bias_hyperplane(s, x, kernel):
 def indicator(s, x, kernel):
     sum = 0
     for i in range(0, len(a)):
+        print(i)
+        print(len(a))
+        #print(len(t))
+        print(len(x))
         sum = sum + a[i]*t[i]*kernel(s, x[i])
     return sum - offset_bias_hyperplane(s, x, kernel)
 
+def plot(x):
+    xgrid = numpy.linspace(-5, 5)
+    ygrid = numpy.linspace(-4, 4)
+    grid = numpy.array([[indicator(x, y, linear_kernel)
+                        for x in xgrid ]
+                        for y in ygrid])
+
+    plt.contour(xgrid, ygrid, grid, (-1.0, 0.0, 1.0),
+                colors=('red', 'black', 'blue'),
+                linewidths=(1, 3, 1))
 
 # GLOBALS
 N = 10
@@ -84,5 +98,7 @@ def main():
     nonzero = [i for i in alphaX if not 0]
     print("alpha: ", alphaX)
     print("nonzero: ", nonzero)
+
+    plot()
 
 main()
