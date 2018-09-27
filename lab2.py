@@ -3,16 +3,18 @@ from scipy.optimize import minimize
 from scipy.spatial import distance
 import matplotlib.pyplot as plt
 
-def zerofun(a):
-    for i in range(0, len(a)):
-        if a[i] > C or a[i] < 0:
-            print("out of bounds in zerofun")
-    return numpy.dot(a, t)
+import dataset as dataset
 
-def precalculate(x, kernel):
+def zerofun(targets):
+    for i in range(0, len(targets)):
+        if start[i] > C or start[i] < 0:
+            print("out of bounds in zerofun")
+    return numpy.dot(start, targets)
+
+def precalculate(inputs, kernel, targets):
     for i in range(0, len(precalculated)):
         for j in range(0, len(precalculated[0])):
-            precalculated[i][j] = t[i]*t[j]*kernel(x, x)
+            precalculated[i][j] = targets[i]*targets[j]*kernel(inputs, inputs)
 
 def radial_basis_function_kernel(x, y, sigma = 1):
     return math.exp(-((distance.euclidean(x, y)**2)/(2*sigma*sigma)))
@@ -34,26 +36,19 @@ def objective(a):
 
     return 0.5*sum1 - sum2
 
-def offset_bias_hyperplane(s, x, kernel):
-    sum = 0
-    for i in range(0, len(a)):
-        sum = sum + a[i]*t[i]*kernel(s, x[i]) - t[s]
-    return sum
+def indicator(x, y, nA, nTargets, nInputs, kernel):
+    sum = 0.0
+    sumB = 0.0
+    for i in range(0, len(nA)):
+        sum += nA[i] * nTargets[i] * kernel([x, y], nInputs[i])
+        sumB += nA[i] * nTargets[i] * kernel([x, y], nInputs[i]) - nTargets[x*y]
 
-def indicator(s, x, kernel):
-    sum = 0
-    for i in range(0, len(a)):
-        print(i)
-        print(len(a))
-        #print(len(t))
-        print(len(x))
-        sum = sum + a[i]*t[i]*kernel(s, x[i])
-    return sum - offset_bias_hyperplane(s, x, kernel)
+    return sum - sumB
 
-def plot(x):
+def plot():
     xgrid = numpy.linspace(-5, 5)
     ygrid = numpy.linspace(-4, 4)
-    grid = numpy.array([[indicator(x, y, linear_kernel)
+    grid = numpy.array([[indicator(sv, x, y, linear_kernel)
                         for x in xgrid ]
                         for y in ygrid])
 
@@ -62,59 +57,49 @@ def plot(x):
                 linewidths=(1, 3, 1))
 
 # GLOBALS
-N = 10
-start = numpy.zeros(N)
-i, j = 5, 5;
+start = numpy.zeros(40)
+i, j = 40, 40;
 precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
 C = 1
-B = [(0, C) for b in range(N)] # bounds
-XC = {'type':'eq', 'fun':zerofun} # constraints
-t = [1, -1, 1, 1, -1, -1, 1, 1, -1, 1]
-a = [1, 4, 3, 3, 7, 9, 22, 1, 23, 10]
+B = [(0, C) for b in range(40)] # bounds
+XC = {'type':'eq', 'fun': zerofun} # constraints
 
-def extract_nonzeroes(alphaX, X):
-  newAlphaX = []
-  newX = []
-  newT = []
-  for i in range(0, len(alphaX)):
-      if alphaX[i] > 0.00001 or alphaX[i] < -0.00001:
-        newAlphaX.append(alphaX[i])
-        newX.append(X[i])
-        newT.append(t[i])
-  return newAlphaX, newX, newT
+
+def extract_nonzeroes(a, inputs, targets):
+  nA = []
+  nInputs = []
+  nTargets = []
+  for i in range(0, len(a)):
+      if a[i] > 0.00001 or a[i] < -0.00001:
+        nA.append(a[i])
+        nInputs.append(inputs[i])
+        nTargets.append(targets[i])
+  return nA, nInputs, nTargets
 
 def main():
 
-    precalculate(a, radial_basis_function_kernel)
-    ret = minimize(objective, start, bounds=B, constraints=XC)
-    alphaX = ret['x']
-    alphaSuccess = ret['success']
+    #precalculate(a, linear_kernel)
+    #ret = minimize(objective, start, bounds=B, constraints=XC)
+    #alphaX = ret['x']
+    #alphaSuccess = ret['success']
     #print("alpha x :", alphaX)
     #print("alpha success :", alphaSuccess)
-    '''
-    print(vector)
-    print(linear_kernel([3, 0,4, 2], [2, 0 ,1, 9]))
-    print("pol kern: ", polynomial_kernel([3, 0,4, 2], [2, 0 ,1, 9], 2))
-    #print(objective([0,7,11], [0, 83, 2]))
-    print("rbf kern: ", radial_basis_function_kernel([3, 0, 4, 2], [2, 0 ,1, 9], 1))
-    print("zerofun: ", zerofun([0,2,2], [1, -1 , 1], 10))
 
-    print("before: ", precalculated)
-    precalculate([1, -1, 1, 1, 1], [4, 3, 7, 8, 5], linear_kernel)
-    print("william: ", precalculated)
+    inputs, targets = dataset.generateData()
+    print("inputs")
+    print(len(inputs))
 
-    print(objective([1, 4, 3, 3, 7]))
-    '''
+    print("targets")
+    print(len(targets))
 
-    newAlphaX, newX, newT = extract_nonzeroes(alphaX, a)
+    precalculate(inputs, linear_kernel, targets)
+    ret = minimize(objective, start, bounds=B, constraints=XC)
+    a = ret['x']
+    success = ret['success']
+    #if success
 
-    print("alpha")
-    print(list(alphaX))
-    print("nonzeroes")
-    print(newAlphaX)
-    #print(len(alphaX))
-    #print(len(nonzeroes))
+    nA, nInputs, nTargets = extract_nonzeroes(a, inputs, targets)
 
-    plot()
+    plot(nA, nInputs)
 
 main()

@@ -22,16 +22,12 @@ def generateData():
     random.shuffle(permute)
     inputs = inputs[permute, :]
     targets = targets[permute]
-    print(permute)
-    printData(classA, classB)
+    #print(permute)
+    return inputs, targets
+    #printData(classA, classB)
 
 def printData(classA, classB):
     plt.plot([p[0] for p in classA], [p[1] for p in classA],'b.')
     plt.plot([p[0] for p in classB], [p[1] for p in classB],'r.')
     plt.axis('equal')
     plt.show()
-
-def main():
-    generateData()
-
-main()
