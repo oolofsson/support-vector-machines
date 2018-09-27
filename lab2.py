@@ -13,7 +13,7 @@ def precalculate(inputs, kernel, targets):
         for j in range(0, len(precalculated[0])):
             precalculated[i][j] = targets[i] * targets[j] * kernel(inputs[i], inputs[j])
 
-def radial_basis_function_kernel(x, y, sigma = 1):
+def radial_basis_function_kernel(x, y, sigma = 5):
     return math.exp(-((distance.euclidean(x, y)**2)/(2*sigma*sigma)))
 
 def polynomial_kernel(x, y, p = 3):
@@ -24,8 +24,6 @@ def linear_kernel(x, y):
 
 
 def objective(a):
-
-    #0.5*
     sum1 = 0.0
     sum2 = 0.0
     for i in range(0, len(precalculated)):
@@ -33,8 +31,6 @@ def objective(a):
         for j in range(0, len(precalculated[0])):
             sum1 = sum1 + (a[i] * a[j] * precalculated[i][j])
 
-    print("sum to print")
-    print(0.5*sum1 - sum2)
     return 0.5*sum1 - sum2
 
 def indicator(x, y, nA, nTargets, nInputs, kernel):
@@ -45,32 +41,28 @@ def indicator(x, y, nA, nTargets, nInputs, kernel):
         sum += nA[i] * nTargets[i] * kernel([x, y], nInputs[i])
         #sumB += nA[i] * nTargets[i] * kernel([x, y], nInputs[i]) - nTargets[x*y]
 
-    #print("sum - sumB")
-    #print(sum)
     return sum - sumB
 
 def plot(nA, nInputs, nTargets):
     xgrid = numpy.linspace(-5, 5)
     ygrid = numpy.linspace(-4, 4)
-    grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, linear_kernel)
+    grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, radial_basis_function_kernel)
                         for x in xgrid]
                         for y in ygrid])
-
-    print("grid: ")
-    print(grid)
-
     plt.contour(xgrid, ygrid, grid, (-1.0, 0.0, 1.0),
                 colors=('red', 'black', 'blue'),
                 linewidths=(1, 3, 1))
+    plt.show()
 
 # GLOBALS
 targets = []
 outofbounds = []
-start = numpy.zeros(40)
-i, j = 40, 40;
+N = 40
+start = numpy.zeros(N)
+i, j = N, N;
 precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
-C = 10
-B = [(0, C) for b in range(40)] # bounds
+C = 100
+B = [(0, C) for b in range(N)] # bounds
 XC = {'type':'eq', 'fun': zerofun} # constraints
 
 
@@ -87,26 +79,17 @@ def extract_nonzeroes(a, inputs, targets):
 
 def main():
 
-    #precalculate(a, linear_kernel)
-    #ret = minimize(objective, start, bounds=B, constraints=XC)
-    #alphaX = ret['x']
-    #alphaSuccess = ret['success']
-    #print("alpha x :", alphaX)
-    #print("alpha success :", alphaSuccess)
     global targets
-    inputs, targets = dataset.generateData()
+    inputs, targets, classA, classB = dataset.generateData(N)
 
-    precalculate(inputs, linear_kernel, targets)
-    print(B)
-    print(XC)
+    precalculate(inputs, radial_basis_function_kernel, targets)
     ret = minimize(objective, start, bounds=B, constraints=XC)
 
     a = ret['x']
     success = ret['success']
-    print("success")
-    print(success)
+    print (success)
     nA, nInputs, nTargets = extract_nonzeroes(a, inputs, targets)
-
+    dataset.printData(classA, classB)
     plot(nA, nInputs, nTargets)
 
 main()
