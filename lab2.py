@@ -72,14 +72,25 @@ XC = {'type':'eq', 'fun':zerofun} # constraints
 t = [1, -1, 1, 1, -1, -1, 1, 1, -1, 1]
 a = [1, 4, 3, 3, 7, 9, 22, 1, 23, 10]
 
+def extract_nonzeroes(alphaX, X):
+  newAlphaX = []
+  newX = []
+  newT = []
+  for i in range(0, len(alphaX)):
+      if alphaX[i] > 0.00001 or alphaX[i] < -0.00001:
+        newAlphaX.append(alphaX[i])
+        newX.append(X[i])
+        newT.append(t[i])
+  return newAlphaX, newX, newT
+
 def main():
 
     precalculate(a, radial_basis_function_kernel)
     ret = minimize(objective, start, bounds=B, constraints=XC)
     alphaX = ret['x']
     alphaSuccess = ret['success']
-    print("alpha x :", alphaX)
-    print("alpha success :", alphaSuccess)
+    #print("alpha x :", alphaX)
+    #print("alpha success :", alphaSuccess)
     '''
     print(vector)
     print(linear_kernel([3, 0,4, 2], [2, 0 ,1, 9]))
@@ -95,9 +106,14 @@ def main():
     print(objective([1, 4, 3, 3, 7]))
     '''
 
-    nonzero = [i for i in alphaX if not 0]
-    print("alpha: ", alphaX)
-    print("nonzero: ", nonzero)
+    newAlphaX, newX, newT = extract_nonzeroes(alphaX, a)
+
+    print("alpha")
+    print(list(alphaX))
+    print("nonzeroes")
+    print(newAlphaX)
+    #print(len(alphaX))
+    #print(len(nonzeroes))
 
     plot()
 
