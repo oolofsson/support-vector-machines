@@ -18,10 +18,12 @@ def oskarDataset(size):
     We can add more complexe datasets here if we need to
 '''
 
-def generateData(size):
+def generateData(size, dataset):
     numpy.random.seed(100)
-    #classA, classB = basicDataset(size)
-    classA, classB = oskarDataset(size)
+    if dataset == "smallClusters":
+        classA, classB = basicDataset(size)
+    else:
+        classA, classB = oskarDataset(size)
     inputs = numpy.concatenate((classA, classB))
     targets = numpy.concatenate((numpy.ones(classA.shape[0]), - numpy.ones(classB.shape[0])))
     N = inputs.shape[0]
@@ -35,4 +37,3 @@ def printData(classA, classB):
     plt.plot([p[0] for p in classA], [p[1] for p in classA],'b.')
     plt.plot([p[0] for p in classB], [p[1] for p in classB],'r.')
     plt.axis('equal')
-    

@@ -4,6 +4,7 @@ from scipy.spatial import distance
 import matplotlib.pyplot as plt
 
 import dataset as dataset
+import inputagruments as ioargs
 
 def zerofun(a):
     return numpy.dot(a, targets)
@@ -43,10 +44,21 @@ def indicator(x, y, nA, nTargets, nInputs, kernel):
 
     return sum - sumB
 
-def plot(nA, nInputs, nTargets):
+def plot(nA, nInputs, nTargets, kernel):
     xgrid = numpy.linspace(-5, 5)
     ygrid = numpy.linspace(-4, 4)
-    grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, radial_basis_function_kernel)
+
+    # check which kernel we are using
+    if kernel == "linear":
+        grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, linear_kernel)
+                        for x in xgrid]
+                        for y in ygrid])
+    elif kernel == "polynomal":
+        grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, polynomial_kernel)
+                        for x in xgrid]
+                        for y in ygrid])
+    else:
+        grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, radial_basis_function_kernel)
                         for x in xgrid]
                         for y in ygrid])
     plt.contour(xgrid, ygrid, grid, (-1.0, 0.0, 1.0),
@@ -65,6 +77,13 @@ C = 100
 B = [(0, C) for b in range(N)] # bounds
 XC = {'type':'eq', 'fun': zerofun} # constraints
 
+def updateB(n):
+    global B
+    global precalculated
+    global start
+    B = [(0, C) for b in range(n)] # bounds
+    precalculated = [[0 for l in range(0, n)] for k in range(0, n)]
+    start = numpy.zeros(N)
 
 def extract_nonzeroes(a, inputs, targets):
   nA = []
@@ -78,18 +97,35 @@ def extract_nonzeroes(a, inputs, targets):
   return nA, nInputs, nTargets
 
 def main():
+    inC, inN, inK, inD = ioargs.readInput()
 
+    #   overwrite existing global variables
+    global N
+    global C
+    global i, j
+    N = inN
+    C = inC
+    i, j = N, N
+    updateB(N)
     global targets
-    inputs, targets, classA, classB = dataset.generateData(N)
+    inputs, targets, classA, classB = dataset.generateData(inN, inD)
 
-    precalculate(inputs, radial_basis_function_kernel, targets)
+    if inK == "linear":
+        precalculate(inputs, linear_kernel, targets)
+    elif inK == "polynomal":
+        precalculate(inputs, polynomial_kernel, targets)
+    else:
+        precalculate(inputs, radial_basis_function_kernel, targets)
     ret = minimize(objective, start, bounds=B, constraints=XC)
 
     a = ret['x']
     success = ret['success']
-    print (success)
+    if success == True:
+        print ("Optimal solution found")
+    else:
+        print ("No optimal solution could be found")
     nA, nInputs, nTargets = extract_nonzeroes(a, inputs, targets)
     dataset.printData(classA, classB)
-    plot(nA, nInputs, nTargets)
+    plot(nA, nInputs, nTargets, inK)
 
 main()
