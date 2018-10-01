@@ -58,7 +58,7 @@ def plot(nA, nInputs, nTargets, kernel):
         grid = numpy.array([[indicator(x, y, nA, nInputs, nTargets, linear_kernel)
                         for x in xgrid]
                         for y in ygrid])
-    elif kernel == "polynomal":
+    elif kernel == "polynomial":
         grid = numpy.array([[indicator(x, y, nA, nInputs, nTargets, polynomial_kernel)
                         for x in xgrid]
                         for y in ygrid])
@@ -123,7 +123,7 @@ def main():
 
     if inK == "linear":
         precalculate(inputs, linear_kernel, targets)
-    elif inK == "polynomal":
+    elif inK == "polynomial":
         precalculate(inputs, polynomial_kernel, targets)
     else:
         precalculate(inputs, radial_basis_function_kernel, targets)
