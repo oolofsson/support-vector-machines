@@ -17,7 +17,7 @@ def precalculate(inputs, kernel, targets):
 def radial_basis_function_kernel(x, y, sigma = 5):
     return math.exp(-((distance.euclidean(x, y)**2)/(2*sigma*sigma)))
 
-def polynomial_kernel(x, y, p = 3):
+def polynomial_kernel(x, y, p = 5):
     return (numpy.dot(numpy.transpose(x), y) + 1)**p
 
 def linear_kernel(x, y):
@@ -31,18 +31,21 @@ def objective(a):
         sum2 = sum2 + a[i]
         for j in range(0, len(precalculated[0])):
             sum1 = sum1 + (a[i] * a[j] * precalculated[i][j])
-
     return 0.5*sum1 - sum2
 
-def indicator(x, y, nA, nTargets, nInputs, kernel):
+def calculateB(sv, target, nA, nInputs, nTargets, kernel):
     sum = 0.0
-    sumB = 0.0
+    for i in range(0, len(nA)):
+        sum += nA[i] * nTargets[i] * kernel(sv, nInputs[i])
+    return sum - target;
 
+def indicator(x, y, nA, nInputs, nTargets, kernel):
+    sum = 0.0
+    b = calculateB(nInputs[1], nTargets[1], nA, nInputs, nTargets, kernel)
     for i in range(0, len(nA)):
         sum += nA[i] * nTargets[i] * kernel([x, y], nInputs[i])
-        #sumB += nA[i] * nTargets[i] * kernel([x, y], nInputs[i]) - nTargets[x*y]
 
-    return sum - sumB
+    return sum - b
 
 def plot(nA, nInputs, nTargets, kernel):
     xgrid = numpy.linspace(-5, 5)
@@ -50,20 +53,22 @@ def plot(nA, nInputs, nTargets, kernel):
 
     # check which kernel we are using
     if kernel == "linear":
-        grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, linear_kernel)
+        grid = numpy.array([[indicator(x, y, nA, nInputs, nTargets, linear_kernel)
                         for x in xgrid]
                         for y in ygrid])
     elif kernel == "polynomal":
-        grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, polynomial_kernel)
+        grid = numpy.array([[indicator(x, y, nA, nInputs, nTargets, polynomial_kernel)
                         for x in xgrid]
                         for y in ygrid])
     else:
-        grid = numpy.array([[indicator(x, y, nA, nTargets, nInputs, radial_basis_function_kernel)
+        grid = numpy.array([[indicator(x, y, nA, nInputs, nTargets, radial_basis_function_kernel)
                         for x in xgrid]
                         for y in ygrid])
+
     plt.contour(xgrid, ygrid, grid, (-1.0, 0.0, 1.0),
                 colors=('red', 'black', 'blue'),
                 linewidths=(1, 3, 1))
+
     plt.show()
 
 # GLOBALS
@@ -109,6 +114,8 @@ def main():
     updateB(N)
     global targets
     inputs, targets, classA, classB = dataset.generateData(inN, inD)
+    plt.plot([p[0] for p in classA], [p[1] for p in classA],'b.')
+    plt.plot([p[0] for p in classB], [p[1] for p in classB],'r.')
 
     if inK == "linear":
         precalculate(inputs, linear_kernel, targets)
@@ -116,6 +123,7 @@ def main():
         precalculate(inputs, polynomial_kernel, targets)
     else:
         precalculate(inputs, radial_basis_function_kernel, targets)
+
     ret = minimize(objective, start, bounds=B, constraints=XC)
 
     a = ret['x']
@@ -125,7 +133,6 @@ def main():
     else:
         print ("No optimal solution could be found")
     nA, nInputs, nTargets = extract_nonzeroes(a, inputs, targets)
-    dataset.printData(classA, classB)
     plot(nA, nInputs, nTargets, inK)
 
 main()
