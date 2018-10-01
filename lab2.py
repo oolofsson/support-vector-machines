@@ -14,11 +14,13 @@ def precalculate(inputs, kernel, targets):
         for j in range(0, len(precalculated[0])):
             precalculated[i][j] = targets[i] * targets[j] * kernel(inputs[i], inputs[j])
 
-def radial_basis_function_kernel(x, y, sigma = 5):
-    return math.exp(-((distance.euclidean(x, y)**2)/(2*sigma*sigma)))
+def radial_basis_function_kernel(x, y):
+    global SIGMA
+    return math.exp(-((distance.euclidean(x, y)**2)/(2*SIGMA*SIGMA)))
 
-def polynomial_kernel(x, y, p = 5):
-    return (numpy.dot(numpy.transpose(x), y) + 1)**p
+def polynomial_kernel(x, y):
+    global polyGrade
+    return (numpy.dot(numpy.transpose(x), y) + 1)**polyGrade
 
 def linear_kernel(x, y):
     return numpy.dot(numpy.transpose(x), y)
@@ -81,6 +83,8 @@ precalculated = [[0 for l in range(0, j)] for k in range(0, i)]
 C = 100
 B = [(0, C) for b in range(N)] # bounds
 XC = {'type':'eq', 'fun': zerofun} # constraints
+polyGrade = 2
+SIGMA = 5
 
 def updateB(n):
     global B
@@ -102,7 +106,7 @@ def extract_nonzeroes(a, inputs, targets):
   return nA, nInputs, nTargets
 
 def main():
-    inC, inN, inK, inD = ioargs.readInput()
+    inC, inN, inK, inD, inP, inS = ioargs.readInput()
 
     #   overwrite existing global variables
     global N

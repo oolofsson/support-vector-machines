@@ -7,6 +7,8 @@ def readInput():
     parser.add_argument("-n",  help="The number of datapoints generated", type=int)
     parser.add_argument("-k", help="Specifies kerel function to use (linear, polynomal, radius)", type=str)
     parser.add_argument("-d",  help="Specifies which dataset to use (smallClusters, largecluster, oskars)", type=str)
+    parser.add_argument("-p",  help="Specifies which polynomial grade to use(polynomial kernel only (default = 2))", type=int)
+    parser.add_argument("-s",  help="Specifies which sigma value to use (radius kernel only (default = 5))", type=int)
     args = parser.parse_args()
     if args.c is None:
         print("You must specify a slack variable using \"-c\". \nExample: python3 lab2.py -c 10")
@@ -20,7 +22,11 @@ def readInput():
     if args.d is None:
         print("You must specify which dataset to be used by using \"-d\". \nExample: python3 lab2.py -c 10 -n 40 -k linear -d smallClusters")
         sys.exit(0)
-    return args.c, args.n, args.k, args.d
+    if args.p is None:
+        args.p = 2
+    if args.s is None:
+        args.s = 5
+    return args.c, args.n, args.k, args.d, args.p, args.s
 
 '''def main ():
     c, n, k, d = readInput()
