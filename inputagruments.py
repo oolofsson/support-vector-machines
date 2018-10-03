@@ -5,7 +5,7 @@ def readInput():
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", help="sets the \"Slack\" variable", type=int)
     parser.add_argument("-n",  help="The number of datapoints generated", type=int)
-    parser.add_argument("-k", help="Specifies kerel function to use (linear, polynomal, radius)", type=str)
+    parser.add_argument("-k", help="Specifies kernel function to use (linear, polynomial, radius)", type=str)
     parser.add_argument("-d",  help="Specifies which dataset to use (smallClusters, largecluster, oskars)", type=str)
     parser.add_argument("-p",  help="Specifies which polynomial grade to use(polynomial kernel only (default = 2))", type=int)
     parser.add_argument("-s",  help="Specifies which sigma value to use (radius kernel only (default = 5))", type=int)
@@ -27,10 +27,3 @@ def readInput():
     if args.s is None:
         args.s = 5
     return args.c, args.n, args.k, args.d, args.p, args.s
-
-'''def main ():
-    c, n, k, d = readInput()
-    print (k)
-
-main()
-'''

@@ -49,6 +49,7 @@ def indicator(x, y, nA, nInputs, nTargets, kernel):
 
     return sum - b
 
+# plots our data
 def plot(nA, nInputs, nTargets, kernel):
     xgrid = numpy.linspace(-5, 5)
     ygrid = numpy.linspace(-4, 4)
@@ -111,10 +112,12 @@ def main():
     #   overwrite existing global variables
     global N
     global C
-    global i, j
+    global i, j, polyGrade, SIGMA
     N = inN
     C = inC
     i, j = N, N
+    polyGrade = inP
+    SIGMA = inS
     updateB(N)
     global targets
     inputs, targets, classA, classB = dataset.generateData(inN, inD)
