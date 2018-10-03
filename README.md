@@ -22,12 +22,13 @@ Done.
 #### the decision boundary. Reason about this in terms of the bias-
 #### variance trade-off.
 
-The polynomial degree effects how many turning points the function, if we have a high variance we should be careful with having a to high degree of the polynomial since it can induce overfitting.
+Having a higher polynomial degree and a lower sigma is will classify it more exact according to the training data and thus increasing the variance. Having a lower polynomial degree or higher sigma will instead induce more bias but lower variance.
 
 #### 4. Explore the role of the slack parameter C. What happens for very
 #### large/small values?
 
-Having a higher slack paramter makes the classification more strict, including more points which means the "street" gets narrower.
+Having a higher slack paramter makes the classification more strict, including more points which means the "street" gets narrower. It is used as a penalty scale for the misslasified points. Which is then used as a part of the optimization.
+
 
 #### 5. Imagine that you are given data that is not easily separable. When
 #### should you opt for more slack rather than going for a more complex
